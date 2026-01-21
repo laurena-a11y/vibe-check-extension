@@ -1,0 +1,1 @@
+export { FigmaFetcher } from './figmaFetcher';

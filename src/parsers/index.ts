@@ -1,0 +1,1 @@
+export { parseReactFile } from './reactParser';

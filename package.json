@@ -1,0 +1,122 @@
+{
+  "name": "vibe-check",
+  "displayName": "Vibe Check",
+  "description": "Detect when you're reinventing the wheel by comparing your code against existing design systems",
+  "version": "0.1.0",
+  "publisher": "laurena-a11y",
+  "engines": {
+    "vscode": "^1.95.0"
+  },
+  "categories": [
+    "Linters",
+    "Programming Languages",
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:vibeCheck.checkCurrentFile"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "vibeCheck.checkCurrentFile",
+        "title": "Vibe Check: Check Current File",
+        "category": "Vibe Check"
+      },
+      {
+        "command": "vibeCheck.configurePatterns",
+        "title": "Vibe Check: Configure Pattern Libraries",
+        "category": "Vibe Check"
+      },
+      {
+        "command": "vibeCheck.refreshCache",
+        "title": "Vibe Check: Refresh Pattern Cache",
+        "category": "Vibe Check"
+      }
+    ],
+    "configuration": {
+      "title": "Vibe Check",
+      "properties": {
+        "vibeCheck.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable/disable Vibe Check extension"
+        },
+        "vibeCheck.patternLibraries": {
+          "type": "array",
+          "default": [],
+          "description": "Pattern library sources (Figma URLs, web URLs)",
+          "items": {
+            "type": "object"
+          }
+        },
+        "vibeCheck.matchingThreshold": {
+          "type": "number",
+          "default": 70,
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Minimum similarity score to consider a match (0-100)"
+        },
+        "vibeCheck.matchingStrategy": {
+          "type": "string",
+          "enum": [
+            "structural",
+            "semantic",
+            "hybrid"
+          ],
+          "default": "hybrid",
+          "description": "Matching strategy to use"
+        },
+        "vibeCheck.semanticWeight": {
+          "type": "number",
+          "default": 40,
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Weight for semantic matching in hybrid mode (0-100)"
+        },
+        "vibeCheck.aiProvider": {
+          "type": "string",
+          "enum": [
+            "claude",
+            "openai",
+            "none"
+          ],
+          "default": "claude",
+          "description": "AI provider for semantic analysis"
+        },
+        "vibeCheck.cacheExpiration": {
+          "type": "number",
+          "default": 24,
+          "description": "Hours before cached pattern data expires"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.95.0",
+    "@types/node": "^20.0.0",
+    "@types/babel__parser": "^7.1.0",
+    "@types/babel__traverse": "^7.20.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "eslint": "^8.56.0",
+    "typescript": "^5.3.0",
+    "@vscode/test-cli": "^0.0.4",
+    "@vscode/test-electron": "^2.3.0"
+  },
+  "dependencies": {
+    "@babel/parser": "^7.23.0",
+    "@babel/traverse": "^7.23.0",
+    "@babel/types": "^7.23.0",
+    "axios": "^1.6.0",
+    "cheerio": "^1.0.0-rc.12"
+  }
+}

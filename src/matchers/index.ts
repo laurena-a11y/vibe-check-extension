@@ -1,0 +1,1 @@
+export { StructuralMatcher } from './structuralMatcher';

@@ -18,6 +18,8 @@ out/
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
 .idea
 *.suo
 *.ntvs*
@@ -35,3 +37,7 @@ Thumbs.db
 # Testing
 coverage/
 .nyc_output/
+.vscode-test/
+
+# VS Code extension specific
+.vscode-test-web/
