@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { parseReactFile } from '../parsers';
 import { FigmaFetcher } from '../fetchers';
+import { MockFetcher } from '../fetchers/mockFetcher';
 import { StructuralMatcher } from '../matchers';
 import { ConfigService } from '../services';
 import { DesignSystemComponent, FigmaConfig } from '../models';
@@ -56,43 +57,45 @@ export async function checkCurrentFile(context: vscode.ExtensionContext): Promis
         const configService = ConfigService.getInstance();
         const patternLibraries = configService.getPatternLibraries();
 
-        if (patternLibraries.length === 0) {
-            outputChannel.appendLine('No pattern libraries configured.');
-            outputChannel.appendLine('\nTo configure pattern libraries, run:');
-            outputChannel.appendLine('  Vibe Check: Configure Pattern Libraries');
-            vscode.window.showWarningMessage(
-                'No pattern libraries configured. Please configure at least one pattern library.'
-            );
-            return;
-        }
-
-        outputChannel.appendLine('Fetching pattern libraries...');
-
         // Fetch components from all enabled pattern libraries
         let allDesignSystemComponents: DesignSystemComponent[] = [];
 
-        for (const library of patternLibraries) {
-            if (!library.enabled) continue;
+        if (patternLibraries.length === 0) {
+            outputChannel.appendLine('No pattern libraries configured.');
+            outputChannel.appendLine('Using mock Square-style design system for demo...\n');
 
-            try {
-                if (library.type === 'figma') {
-                    outputChannel.appendLine(`  - Fetching from Figma: ${library.name}`);
-                    const figmaFetcher = new FigmaFetcher();
-                    const components = await figmaFetcher.fetchComponents(
-                        library.config as FigmaConfig
-                    );
-                    allDesignSystemComponents.push(...components);
-                    outputChannel.appendLine(`    Found ${components.length} components`);
+            const mockFetcher = new MockFetcher();
+            allDesignSystemComponents = await mockFetcher.fetchComponents();
+            outputChannel.appendLine(`Loaded ${allDesignSystemComponents.length} mock components from Square design system\n`);
+        } else {
+            outputChannel.appendLine('Fetching pattern libraries...');
+
+            for (const library of patternLibraries) {
+                if (!library.enabled) continue;
+
+                try {
+                    if (library.type === 'figma') {
+                        outputChannel.appendLine(`  - Fetching from Figma: ${library.name}`);
+                        const figmaFetcher = new FigmaFetcher();
+                        const components = await figmaFetcher.fetchComponents(
+                            library.config as FigmaConfig
+                        );
+                        allDesignSystemComponents.push(...components);
+                        outputChannel.appendLine(`    Found ${components.length} components`);
+                    }
+                } catch (error) {
+                    outputChannel.appendLine(`    Error: ${error}`);
                 }
-            } catch (error) {
-                outputChannel.appendLine(`    Error: ${error}`);
             }
-        }
 
-        if (allDesignSystemComponents.length === 0) {
-            outputChannel.appendLine('\nNo components found in pattern libraries.');
-            vscode.window.showWarningMessage('No components found in pattern libraries');
-            return;
+            if (allDesignSystemComponents.length === 0) {
+                outputChannel.appendLine('\nNo components found in pattern libraries.');
+                outputChannel.appendLine('Using mock Square-style design system for demo...\n');
+
+                const mockFetcher = new MockFetcher();
+                allDesignSystemComponents = await mockFetcher.fetchComponents();
+                outputChannel.appendLine(`Loaded ${allDesignSystemComponents.length} mock components from Square design system`);
+            }
         }
 
         outputChannel.appendLine(`\nTotal design system components: ${allDesignSystemComponents.length}\n`);
