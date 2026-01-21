@@ -356,7 +356,7 @@ function extractDefaultValue(node: t.Expression): any {
 }
 
 function getNodeSource(node: t.Node, code: string): string {
-    if (node.start !== null && node.end !== null) {
+    if (node.start !== null && node.end !== null && node.start !== undefined && node.end !== undefined) {
         return code.substring(node.start, node.end);
     }
     return '';
