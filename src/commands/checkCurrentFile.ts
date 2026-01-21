@@ -5,6 +5,7 @@ import { MockFetcher } from '../fetchers/mockFetcher';
 import { StructuralMatcher } from '../matchers';
 import { ConfigService } from '../services';
 import { DesignSystemComponent, FigmaConfig } from '../models';
+import { ResultsPanel } from '../views';
 
 let outputChannel: vscode.OutputChannel;
 
@@ -142,8 +143,11 @@ export async function checkCurrentFile(context: vscode.ExtensionContext): Promis
         outputChannel.appendLine('\n========================================');
         outputChannel.appendLine('Analysis complete!');
 
+        // Open visual comparison panel
+        ResultsPanel.createOrShow(context.extensionUri, matches);
+
         vscode.window.showInformationMessage(
-            `Vibe Check found ${matches.length} match(es). Check output for details.`
+            `Vibe Check found ${matches.length} match(es). Visual comparison opened!`
         );
     } catch (error) {
         outputChannel.appendLine(`\nError: ${error}`);
